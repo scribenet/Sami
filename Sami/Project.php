@@ -11,6 +11,7 @@
 
 namespace Sami;
 
+use Sami\RemoteRepository\AbstractRemoteRepository;
 use Sami\Store\StoreInterface;
 use Sami\Reflection\ClassReflection;
 use Sami\Reflection\LazyClassReflection;
@@ -30,9 +31,19 @@ class Project
 {
     protected $versions;
     protected $store;
+
+    /** @var Parser */
     protected $parser;
+
+    /** @var Renderer */
     protected $renderer;
+
+    /** @var ClassReflection[] */
     protected $classes;
+
+    /** @var ClassReflection[] */
+    protected $interfaces;
+
     protected $namespaceClasses;
     protected $namespaceInterfaces;
     protected $namespaceExceptions;
@@ -458,14 +469,14 @@ class Project
         }
     }
 
-    public function getSourceRoot()
+    public function getViewSourceUrl($relativePath, $line)
     {
-        if (!$root = $this->getConfig('source_url')) {
-            return;
+        $remoteRepository = $this->getConfig('remote_repository');
+
+        if ($remoteRepository instanceof AbstractRemoteRepository) {
+            return $remoteRepository->getFileUrl($this->version, $relativePath, $line);
         }
 
-        if (strpos($root, 'github') !== false) {
-            return $root . '/tree/' . $this->version;
-        }
+        return '';
     }
 }
