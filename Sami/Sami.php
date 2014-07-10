@@ -125,7 +125,7 @@ class Sami extends Container
             return new Renderer($sc['twig'], $sc['themes'], $sc['tree'], $sc['indexer']);
         };
 
-        $this['traverser'] = function () {
+        $this['traverser'] = function ($sc) {
             $visitors = array(
                 new ClassVisitor\InheritdocClassVisitor(),
                 new ClassVisitor\MethodClassVisitor(),
@@ -164,7 +164,7 @@ class Sami extends Container
         $this['template_dirs'] = array();
         $this['build_dir'] = getcwd().'/build';
         $this['cache_dir'] = getcwd().'/cache';
-        $this['remote_repository'] = false;
+        $this['remote_repository'] = null;
         $this['default_opened_level'] = 2;
 
         // simulate namespaces for projects based on the PEAR naming conventions
