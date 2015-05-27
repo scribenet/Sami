@@ -252,6 +252,22 @@ a abbr {
     font-size: 11px;
 }
 
+.label-source {
+    background-color: #EDF3FE;
+    color: #0f0f0f;
+    font-weight: 500;
+    padding: .65em 1.0em .7em;
+    font-size: 13px;
+    margin: 4px 0;
+    border-radius: 0;
+}
+
+.label-source:hover,
+.label-source:focus {
+    color: #000 !important;
+    background-color: #E5EDFA;
+}
+
 .description {
     margin: 10px 0;
     padding: 10px;
@@ -288,8 +304,11 @@ a abbr {
 
 .location {
     font-size: 11px;
+    line-height: 20px;
     float: right;
     font-style: italic;
+    padding-top: 3px;
+    padding-right: 4px;
 }
 
 .namespace-list a {

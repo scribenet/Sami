@@ -38,9 +38,17 @@
     {%- endif %}
 {%- endmacro %}
 
-{% macro source_link(project, class) -%}
-    {% if class.sourcepath %}
-        (<a href="{{ class.sourcepath }}">View source</a>)
+{% macro source_method_link(method) -%}
+    {% if method.class.getSourcePath %}
+        <a href="{{ method.class.getSourcePath(method.line) }}">{{ method.line }}</a>
+    {%- else  %}
+        {{ method.line }}
+    {%- endif %}
+{%- endmacro %}
+
+{% macro source_link(class) -%}
+    {% if class.getSourcePath %}
+        <a class="pull-right label label-source" href="{{ class.getSourcePath }}">View source of {{ class.name|split('\\')|last }}</a>
     {%- endif %}
 {%- endmacro %}
 
