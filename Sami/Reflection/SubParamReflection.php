@@ -31,22 +31,22 @@ class SubParamReflection extends Reflection
 
         if (isset($data['properties'])) {
             foreach ($data['properties'] as $propName => $prop) {
-
                 if ($name == 'metadata') {
-                    $this->itemSchema = new SubParamReflection($data['properties'], '');
+                    $this->itemSchema = new self($data['properties'], '');
                 } else {
-                    $this->properties[$propName] = new SubParamReflection($prop, $propName);
+                    $this->properties[$propName] = new self($prop, $propName);
                 }
             }
         }
 
         if (isset($data['items'])) {
-            $this->itemSchema = new SubParamReflection($data['items'], $name . '[]');
+            $this->itemSchema = new self($data['items'], $name.'[]');
         }
     }
 
     public function getClass()
-    {}
+    {
+    }
 
     public function getDescription()
     {
