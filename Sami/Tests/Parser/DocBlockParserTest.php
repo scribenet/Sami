@@ -111,8 +111,8 @@ class DocBlockParserTest extends \PHPUnit_Framework_TestCase
                 ',
                 array(
                     'tags' => array(
-                        'var' => array( // Array from found tags.
-                            array( // First found tag.
+                        'var' => array(// Array from found tags.
+                            array(// First found tag.
                                 array(array('\SingleClass', false), array('\MultipleClass', true)), // Array from data types.
                                 'Property Description',
                             ),
@@ -127,8 +127,8 @@ class DocBlockParserTest extends \PHPUnit_Framework_TestCase
                 ',
                 array(
                     'tags' => array(
-                        'param' => array( // Array from found tags.
-                            array( // First found tag.
+                        'param' => array(// Array from found tags.
+                            array(// First found tag.
                                 array(array('\SingleClass', false), array('\MultipleClass', true)), // Array from data types.
                                 'paramName',
                                 'Param Description',
@@ -145,14 +145,14 @@ class DocBlockParserTest extends \PHPUnit_Framework_TestCase
                 ',
                 array(
                     'tags' => array(
-                        'throw' => array( // Array from found tags.
-                            array( // First found tag.
+                        'throw' => array(// Array from found tags.
+                            array(// First found tag.
                                 '\SingleClass1',
                                 'Exception Description One',
                             ),
                         ),
-                        'throws' => array( // Array from found tags.
-                            array( // Second found tag.
+                        'throws' => array(// Array from found tags.
+                            array(// Second found tag.
                                 '\SingleClass2',
                                 'Exception Description Two',
                             ),
@@ -167,8 +167,8 @@ class DocBlockParserTest extends \PHPUnit_Framework_TestCase
                 ',
                 array(
                     'tags' => array(
-                        'return' => array( // Array from found tags.
-                            array( // First found tag.
+                        'return' => array(// Array from found tags.
+                            array(// First found tag.
                                 array(array('\SingleClass', false), array('\MultipleClass', true)), // Array from data types.
                                 'Return Description',
                             ),

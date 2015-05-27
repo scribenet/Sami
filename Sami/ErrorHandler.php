@@ -13,13 +13,13 @@ namespace Sami;
 
 class ErrorHandler
 {
-    private $levels = array(
-        E_WARNING           => 'Warning',
-        E_NOTICE            => 'Notice',
-        E_USER_ERROR        => 'User Error',
-        E_USER_WARNING      => 'User Warning',
-        E_USER_NOTICE       => 'User Notice',
-        E_STRICT            => 'Runtime Notice',
+    private static $levels = array(
+        E_WARNING => 'Warning',
+        E_NOTICE => 'Notice',
+        E_USER_ERROR => 'User Error',
+        E_USER_WARNING => 'User Warning',
+        E_USER_NOTICE => 'User Notice',
+        E_STRICT => 'Runtime Notice',
         E_RECOVERABLE_ERROR => 'Catchable Fatal Error',
     );
 
@@ -39,7 +39,7 @@ class ErrorHandler
     public function handle($level, $message, $file = 'unknown', $line = 0, $context = array())
     {
         if (error_reporting() & $level) {
-            throw new \ErrorException(sprintf('%s: %s in %s line %d', isset($this->levels[$level]) ? $this->levels[$level] : $level, $message, $file, $line));
+            throw new \ErrorException(sprintf('%s: %s in %s line %d', array_key_exists($level, self::$levels) ? self::$levels[$level] : $level, $message, $file, $line));
         }
 
         return false;

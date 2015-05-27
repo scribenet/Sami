@@ -15,6 +15,7 @@ use Sami\Parser\Parser;
 use Sami\Reflection\ClassReflection;
 use Sami\Reflection\LazyClassReflection;
 use Sami\Renderer\Renderer;
+use Sami\RemoteRepository\AbstractRemoteRepository;
 use Sami\Store\StoreInterface;
 use Sami\Version\SingleVersionCollection;
 use Sami\Version\Version;
@@ -30,9 +31,19 @@ class Project
 {
     protected $versions;
     protected $store;
+
+    /** @var Parser */
     protected $parser;
+
+    /** @var Renderer */
     protected $renderer;
+
+    /** @var ClassReflection[] */
     protected $classes;
+
+    /** @var ClassReflection[] */
+    protected $interfaces;
+
     protected $namespaceClasses;
     protected $namespaceInterfaces;
     protected $namespaceExceptions;
@@ -254,11 +265,13 @@ class Project
 
     public function removeClass(ClassReflection $class)
     {
-        unset($this->classes[$class->getName()]);
-        unset($this->interfaces[$class->getName()]);
-        unset($this->namespaceClasses[$class->getNamespace()][$class->getName()]);
-        unset($this->namespaceInterfaces[$class->getNamespace()][$class->getName()]);
-        unset($this->namespaceExceptions[$class->getNamespace()][$class->getName()]);
+        unset(
+            $this->classes[$class->getName()],
+            $this->interfaces[$class->getName()],
+            $this->namespaceClasses[$class->getNamespace()][$class->getName()],
+            $this->namespaceInterfaces[$class->getNamespace()][$class->getName()],
+            $this->namespaceExceptions[$class->getNamespace()][$class->getName()]
+        );
     }
 
     public function getProjectInterfaces()
@@ -364,7 +377,11 @@ class Project
 
     public static function isPhpTypeHint($hint)
     {
-        return in_array(strtolower($hint), array('', 'scalar', 'object', 'boolean', 'bool', 'int', 'integer', 'array', 'string', 'mixed', 'void', 'null', 'resource', 'double', 'float', 'callable'));
+        return in_array(
+            strtolower($hint),
+            array('', 'scalar', 'object', 'boolean', 'bool', 'int', 'integer', 'array', 'string', 'mixed', 'void', 'null', 'resource', 'double', 'float', 'callable'),
+            false
+        );
     }
 
     protected function updateCache(ClassReflection $class)
@@ -473,5 +490,16 @@ class Project
         if (null !== $callback) {
             call_user_func($callback, Message::RENDER_VERSION_FINISHED, $diff);
         }
+    }
+
+    public function getViewSourceUrl($relativePath, $line)
+    {
+        $remoteRepository = $this->getConfig('remote_repository');
+
+        if ($remoteRepository instanceof AbstractRemoteRepository) {
+            return $remoteRepository->getFileUrl($this->version, $relativePath, $line);
+        }
+
+        return '';
     }
 }
