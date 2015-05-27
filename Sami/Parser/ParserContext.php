@@ -11,9 +11,8 @@
 
 namespace Sami\Parser;
 
-use Sami\Reflection\ClassReflection;
 use Sami\Parser\Filter\FilterInterface;
-use Sami\Parser\DocBlockParser;
+use Sami\Reflection\ClassReflection;
 
 class ParserContext
 {
@@ -96,7 +95,7 @@ class ParserContext
 
     public function addError($name, $line, $error)
     {
-        $this->errors[] = sprintf('An error occurred while parsing "%s" line "%d": %s', $name, $line, $error);
+        $this->errors[] = sprintf('%s on "%s" in %s:%d', $error, $name, $this->file, $line);
     }
 
     public function getErrors()
@@ -111,6 +110,10 @@ class ParserContext
 
     public function leaveClass()
     {
+        if (null === $this->class) {
+            return;
+        }
+
         $this->classes[] = $this->class;
         $this->class = null;
     }

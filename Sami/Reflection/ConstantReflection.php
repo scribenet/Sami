@@ -35,18 +35,18 @@ class ConstantReflection extends Reflection
     public function toArray()
     {
         return array(
-            'name'       => $this->name,
-            'line'       => $this->line,
+            'name' => $this->name,
+            'line' => $this->line,
             'short_desc' => $this->shortDesc,
-            'long_desc'  => $this->longDesc,
+            'long_desc' => $this->longDesc,
         );
     }
 
-    static public function fromArray(Project $project, $array)
+    public static function fromArray(Project $project, $array)
     {
         $constant = new self($array['name'], $array['line']);
         $constant->shortDesc = $array['short_desc'];
-        $constant->longDesc  = $array['long_desc'];
+        $constant->longDesc = $array['long_desc'];
 
         return $constant;
     }

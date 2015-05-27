@@ -11,19 +11,17 @@
 
 namespace Sami;
 
-use Sami\Project;
-
 class Indexer
 {
-    const TYPE_CLASS     = 1;
-    const TYPE_METHOD    = 2;
+    const TYPE_CLASS = 1;
+    const TYPE_METHOD = 2;
     const TYPE_NAMESPACE = 3;
 
     public function getIndex(Project $project)
     {
         $index = array(
             'searchIndex' => array(),
-            'info'        => array(),
+            'info' => array(),
         );
 
         foreach ($project->getNamespaces() as $namespace) {

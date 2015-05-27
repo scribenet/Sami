@@ -11,26 +11,31 @@
 
 namespace Sami;
 
+use PhpParser\Lexer;
+use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitor\NameResolver;
+use PhpParser\Parser as PhpParser;
+use PhpParser\PrettyPrinter\Standard as PrettyPrinter;
 use Pimple\Container;
-use Sami\RemoteRepository\AbstractRemoteRepository;
-use Sami\Parser\CodeParser;
-use Sami\Parser\Parser;
-use Sami\Parser\NodeVisitor;
-use Sami\Parser\ParserContext;
-use Sami\Parser\DocBlockParser;
-use Sami\Parser\Filter\DefaultFilter;
 use Sami\Parser\ClassTraverser;
 use Sami\Parser\ClassVisitor;
-use Sami\Store\JsonStore;
+use Sami\Parser\CodeParser;
+use Sami\Parser\DocBlockParser;
+use Sami\Parser\Filter\DefaultFilter;
+use Sami\Parser\NodeVisitor;
+use Sami\Parser\Parser;
+use Sami\Parser\ParserContext;
 use Sami\Renderer\Renderer;
 use Sami\Renderer\ThemeSet;
 use Sami\Renderer\TwigExtension;
-use Sami\Version\Version;
+use Sami\RemoteRepository\AbstractRemoteRepository;
+use Sami\Store\JsonStore;
 use Sami\Version\SingleVersionCollection;
+use Sami\Version\Version;
 
 class Sami extends Container
 {
-    const VERSION = '2.0.1-DEV';
+    const VERSION = '3.0.4-DEV';
 
     public function __construct($iterator = null, array $config = array())
     {
@@ -43,7 +48,7 @@ class Sami extends Container
         }
 
         $this['_versions'] = function ($sc) {
-            $versions = isset($sc['versions']) ? $sc['versions'] : $sc['version'];
+            $versions = array_key_exists('versions', $sc) ? $sc['versions'] : $sc['version'];
 
             if (is_string($versions)) {
                 $versions = new Version($versions);
@@ -94,12 +99,12 @@ class Sami extends Container
         };
 
         $this['php_parser'] = function () {
-            return new \PHPParser_Parser(new \PHPParser_Lexer());
+            return new PhpParser(new Lexer());
         };
 
         $this['php_traverser'] = function ($sc) {
-            $traverser = new \PHPParser_NodeTraverser();
-            $traverser->addVisitor(new \PHPParser_NodeVisitor_NameResolver());
+            $traverser = new NodeTraverser();
+            $traverser->addVisitor(new NameResolver());
             $traverser->addVisitor(new NodeVisitor($sc['parser_context']));
 
             return $traverser;
@@ -110,7 +115,7 @@ class Sami extends Container
         };
 
         $this['pretty_printer'] = function () {
-            return new \PHPParser_PrettyPrinter_Zend();
+            return new PrettyPrinter();
         };
 
         $this['filter'] = function () {
@@ -149,16 +154,16 @@ class Sami extends Container
         $this['twig'] = function () {
             $twig = new \Twig_Environment(new \Twig_Loader_Filesystem(array('/')), array(
                 'strict_variables' => true,
-                'debug'            => true,
-                'auto_reload'      => true,
-                'cache'            => false,
+                'debug' => true,
+                'auto_reload' => true,
+                'cache' => false,
             ));
             $twig->addExtension(new TwigExtension());
 
             return $twig;
         };
 
-        $this['theme'] = 'enhanced';
+        $this['theme'] = 'default';
         $this['title'] = 'API';
         $this['version'] = 'master';
         $this['template_dirs'] = array();

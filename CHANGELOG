@@ -1,9 +1,32 @@
 CHANGELOG
 =========
 
-* 2.0.1 (2014-XX-XX)
+* 3.0.4 (2015-XX-XX)
 
- * added trait properties/methods to the class detail page
+ * n/a
+
+* 3.0.3 (2015-04-08)
+
+ * removed deprecated usage of Symfony Yaml
+ * fixed links to php.net (to get the correct redirection)
+
+* 3.0.2 (2015-02-21)
+
+ * fixed error messages for methods and properties
+
+* 3.0.1 (2015-02-18)
+
+  * fixed command exit code when some parsing error occur to 64
+  * fixed parsing error display when using --no-ansi
+  * fixed tag parsing when the value is already an array
+
+* 3.0.0 (2015-02-17)
+
+  * made phpdocs available when deciding to process classes/methods/...
+  * changed the default theme to use Twitter bootstrap
+  * added trait properties/methods to the class detail page
+  * upgraded to Pimple 3.0
+  * upgraded to PHP Parser 1.0
 
 * 2.0.0 (2014-06-25)
 

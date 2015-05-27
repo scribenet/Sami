@@ -2,7 +2,7 @@
 
 use Sami\Version\GitVersionCollection;
 
-$dir = '/Users/fabien/Code/github/fabpot/Twig/lib';
+$dir = '/Users/fabien/Code/github/twigphp/Twig/lib';
 
 $versions = GitVersionCollection::create($dir)
     ->addFromTags('v1.*')
@@ -10,7 +10,7 @@ $versions = GitVersionCollection::create($dir)
 ;
 
 return new Sami\Sami($dir, array(
-    'theme'                => 'enhanced',
+    'theme'                => 'default',
     'title'                => 'Twig 1.6 API',
     'build_dir'            => __DIR__.'/../build/twig/%version%',
     'cache_dir'            => __DIR__.'/../cache/twig/%version%',

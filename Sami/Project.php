@@ -11,15 +11,15 @@
 
 namespace Sami;
 
-use Sami\RemoteRepository\AbstractRemoteRepository;
-use Sami\Store\StoreInterface;
+use Sami\Parser\Parser;
 use Sami\Reflection\ClassReflection;
 use Sami\Reflection\LazyClassReflection;
-use Sami\Parser\Parser;
 use Sami\Renderer\Renderer;
+use Sami\RemoteRepository\AbstractRemoteRepository;
+use Sami\Store\StoreInterface;
+use Sami\Version\SingleVersionCollection;
 use Sami\Version\Version;
 use Sami\Version\VersionCollection;
-use Sami\Version\SingleVersionCollection;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -65,7 +65,7 @@ class Project
             'cache_dir' => sys_get_temp_dir().'sami/cache',
             'simulate_namespaces' => false,
             'include_parent_data' => true,
-            'theme' => 'enhanced',
+            'theme' => 'default',
         ), $config);
         $this->filesystem = new Filesystem();
 
@@ -236,6 +236,23 @@ class Project
         return $this->namespaceInterfaces[$namespace];
     }
 
+    public function getNamespaceSubNamespaces($parent)
+    {
+        $prefix = strlen($parent) ? ($parent.'\\') : '';
+        $len = strlen($prefix);
+        $namespaces = array();
+
+        foreach ($this->namespaces as $sub) {
+            if (substr($sub, 0, $len) == $prefix
+                && strpos(substr($sub, $len), '\\') === false
+            ) {
+                $namespaces[] = $sub;
+            }
+        }
+
+        return $namespaces;
+    }
+
     public function addClass(ClassReflection $class)
     {
         $this->classes[$class->getName()] = $class;
@@ -248,11 +265,13 @@ class Project
 
     public function removeClass(ClassReflection $class)
     {
-        unset($this->classes[$class->getName()]);
-        unset($this->interfaces[$class->getName()]);
-        unset($this->namespaceClasses[$class->getNamespace()][$class->getName()]);
-        unset($this->namespaceInterfaces[$class->getNamespace()][$class->getName()]);
-        unset($this->namespaceExceptions[$class->getNamespace()][$class->getName()]);
+        unset(
+            $this->classes[$class->getName()],
+            $this->interfaces[$class->getName()],
+            $this->namespaceClasses[$class->getNamespace()][$class->getName()],
+            $this->namespaceInterfaces[$class->getNamespace()][$class->getName()],
+            $this->namespaceExceptions[$class->getNamespace()][$class->getName()]
+        );
     }
 
     public function getProjectInterfaces()
@@ -358,7 +377,11 @@ class Project
 
     public static function isPhpTypeHint($hint)
     {
-        return in_array(strtolower($hint), array('', 'scalar', 'object', 'boolean', 'bool', 'int', 'integer', 'array', 'string', 'mixed', 'void', 'null', 'resource', 'double', 'float', 'callable'));
+        return in_array(
+            strtolower($hint),
+            array('', 'scalar', 'object', 'boolean', 'bool', 'int', 'integer', 'array', 'string', 'mixed', 'void', 'null', 'resource', 'double', 'float', 'callable'),
+            false
+        );
     }
 
     protected function updateCache(ClassReflection $class)

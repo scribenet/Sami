@@ -11,20 +11,22 @@
 
 namespace Sami\Console\Command;
 
+use Sami\Message;
+use Sami\Parser\Transaction;
+use Sami\Project;
+use Sami\Renderer\Diff;
+use Sami\Sami;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Sami\Sami;
-use Sami\Project;
-use Sami\Parser\Transaction;
-use Sami\Renderer\Diff;
-use Sami\Message;
 
 abstract class Command extends BaseCommand
 {
+    const PARSE_ERROR = 64;
+
     protected $sami;
     protected $version;
     protected $started;
@@ -78,24 +80,26 @@ abstract class Command extends BaseCommand
 
         $this->displayParseSummary();
         $this->displayRenderSummary();
+
+        return count($this->errors) ? self::PARSE_ERROR : 0;
     }
 
     public function parse(Project $project)
     {
-        $callback = $this->output->isDecorated() ? array($this, 'messageCallback') : null;
-
-        $project->parse($callback, $this->input->getOption('force'));
+        $project->parse(array($this, 'messageCallback'), $this->input->getOption('force'));
 
         $this->displayParseSummary();
+
+        return count($this->errors) ? self::PARSE_ERROR : 0;
     }
 
     public function render(Project $project)
     {
-        $callback = $this->output->isDecorated() ? array($this, 'messageCallback') : null;
-
-        $project->render($callback, $this->input->getOption('force'));
+        $project->render(array($this, 'messageCallback'), $this->input->getOption('force'));
 
         $this->displayRenderSummary();
+
+        return count($this->errors) ? self::PARSE_ERROR : 0;
     }
 
     public function messageCallback($message, $data)
@@ -125,7 +129,7 @@ abstract class Command extends BaseCommand
                 $this->started = false;
                 break;
             case Message::RENDER_PROGRESS:
-                list ($section, $message, $progression) = $data;
+                list($section, $message, $progression) = $data;
                 $this->displayRenderProgress($section, $message, $progression);
                 break;
         }
@@ -143,11 +147,11 @@ abstract class Command extends BaseCommand
     public function displayParseProgress($progress, $class)
     {
         if ($this->started) {
-            $this->output->write("\033[2A");
+            $this->output->isDecorated() and $this->output->write("\033[2A");
         }
         $this->started = true;
 
-        $this->output->write(sprintf(
+        $this->output->isDecorated() and $this->output->write(sprintf(
             "  Parsing <comment>%s</comment>%s\033[K\n          %s\033[K\n",
             $this->renderProgressBar($progress, 50), count($this->errors) ? ' <fg=red>'.count($this->errors).' error'.(1 == count($this->errors) ? '' : 's').'</>' : '', $class->getName())
         );
@@ -156,11 +160,11 @@ abstract class Command extends BaseCommand
     public function displayRenderProgress($section, $message, $progression)
     {
         if ($this->started) {
-            $this->output->write("\033[2A");
+            $this->output->isDecorated() and $this->output->write("\033[2A");
         }
         $this->started = true;
 
-        $this->output->write(sprintf(
+        $this->output->isDecorated() and $this->output->write(sprintf(
             "  Rendering <comment>%s</comment>\033[K\n            <info>%s</info> %s\033[K\n",
             $this->renderProgressBar($progression, 50), $section, $message
         ));
@@ -172,11 +176,11 @@ abstract class Command extends BaseCommand
             return;
         }
 
-        $this->output->write(sprintf("\033[2A<info>  Parsing   done</info>\033[K\n\033[K\n\033[1A", count($this->errors) ? ' <fg=red>'.count($this->errors).' errors</>' : ''));
+        $this->output->isDecorated() and $this->output->write(sprintf("\033[2A<info>  Parsing   done</info>\033[K\n\033[K\n\033[1A", count($this->errors) ? ' <fg=red>'.count($this->errors).' errors</>' : ''));
 
         if ($this->input->getOption('verbose') && count($this->errors)) {
             foreach ($this->errors as $error) {
-                $this->output->write(sprintf("<fg=red>ERROR</>: "));
+                $this->output->write(sprintf('<fg=red>ERROR</>: '));
                 $this->output->writeln($error, OutputInterface::OUTPUT_RAW);
             }
             $this->output->writeln('');
@@ -189,7 +193,7 @@ abstract class Command extends BaseCommand
             return;
         }
 
-        $this->output->write("\033[2A<info>  Rendering done</info>\033[K\n\033[K\n\033[1A");
+        $this->output->isDecorated() and $this->output->write("\033[2A<info>  Rendering done</info>\033[K\n\033[K\n\033[1A");
     }
 
     public function displayParseSummary()
